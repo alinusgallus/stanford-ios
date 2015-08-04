@@ -41,11 +41,22 @@ class CalculatorBrain
         
         learnOp(Op.BinaryOperation("+",+))
         learnOp(Op.BinaryOperation("×",*))
-        knownOps["÷"] = Op.BinaryOperation("÷"){$1 / $0}
-        knownOps["−"] = Op.BinaryOperation("−"){$1 - $0}
-        knownOps["√"] = Op.UnaryOperation("√" , sqrt)
-        knownOps["sin"] = Op.UnaryOperation("sin"){sin($0)}
-        knownOps["cos"] = Op.UnaryOperation("cos"){cos($0)}
+        learnOp(Op.BinaryOperation("÷",{$1 / $0}))
+        learnOp(Op.BinaryOperation("−", {$1 - $0}))
+        learnOp(Op.UnaryOperation("√",sqrt))
+        learnOp(Op.UnaryOperation("sin", sin))
+        learnOp(Op.UnaryOperation("cos", cos))
+        
+        
+        //learnOp(Op.UnaryOperation("π",M_PI))
+        
+        
+        //refactored
+        //knownOps["÷"] = Op.BinaryOperation("÷"){$1 / $0}
+        //knownOps["−"] = Op.BinaryOperation("−")
+        //knownOps["√"] = Op.UnaryOperation("√" , sqrt)
+        //knownOps["sin"] = Op.UnaryOperation("sin"){sin($0)}
+        //knownOps["cos"] = Op.UnaryOperation("cos"){cos($0)}
     }
     
     func pushOnStack (operand: Double) -> Double? {
@@ -93,9 +104,17 @@ class CalculatorBrain
         
     }
     
+    func empty(){
+        opStack.removeAll(keepCapacity: false)
+    }
+    
     func evaluate() -> Double {
         let (result,remainder) = evaluate(opStack)
-        return result!
+        if let returnValue = result{
+            return returnValue
+        }
+        return 0
+        
     }
 
 }

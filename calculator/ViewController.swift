@@ -44,20 +44,36 @@ class ViewController: UIViewController {
    
     @IBAction func enter() {
         userIsTyping = false
-        if let result = brain.pushOnStack(displayValue){
-            displayValue = result
-        } else{
+        if let value = displayValue{
+            displayValue = brain.pushOnStack(value)
+        }
+        else{
             displayValue = 0
         }
     }
     
-    var displayValue: Double{
+    var displayValue: Double?{
         get{
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            if let number = NSNumberFormatter().numberFromString(display.text!){
+                return number.doubleValue
+            }
+            else {
+               return nil
+            }
+            
         }
         set{
-            display.text = "\(newValue)"
-            userIsTyping = false
+            if let text = newValue{
+                display.text = "\(newValue)"
+                userIsTyping = false
+            }
+            else {
+                display.text = ""
+                userIsTyping = false
+            }
+            
+            
+            
         }
     }
     
@@ -79,7 +95,8 @@ class ViewController: UIViewController {
         }
     
     @IBAction func clear(sender: UIButton) {
-        
+        brain.empty()
+        displayValue = 0
     }
     
     
