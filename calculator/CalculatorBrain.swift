@@ -15,6 +15,7 @@ class CalculatorBrain
         case Operand (Double)
         case UnaryOperation (String, Double -> Double)
         case BinaryOperation (String, (Double, Double) ->Double)
+        case Variable (String)
         
         var description: String{
             get {
@@ -25,6 +26,8 @@ class CalculatorBrain
                     return ("\(symbol)")
                 case .BinaryOperation(let symbol, _):
                     return ("\(symbol)")
+                case .Variable(let symbol):
+                    return ("\(symbol)")
                 }
             }
         }
@@ -32,9 +35,15 @@ class CalculatorBrain
     
     var opStack = [Op]()
     
+    var variableValues = Dictionary<String,Double>()
+    
     var knownOps = [String:Op]()
     
+    
     init() {
+        
+        
+        
         func learnOp(op: Op){
             knownOps[op.description] = op
         }
@@ -47,22 +56,20 @@ class CalculatorBrain
         learnOp(Op.UnaryOperation("sin", sin))
         learnOp(Op.UnaryOperation("cos", cos))
         
-        
-        //learnOp(Op.UnaryOperation("π",M_PI))
-        
-        
-        //refactored
-        //knownOps["÷"] = Op.BinaryOperation("÷"){$1 / $0}
-        //knownOps["−"] = Op.BinaryOperation("−")
-        //knownOps["√"] = Op.UnaryOperation("√" , sqrt)
-        //knownOps["sin"] = Op.UnaryOperation("sin"){sin($0)}
-        //knownOps["cos"] = Op.UnaryOperation("cos"){cos($0)}
     }
     
     func pushOnStack (operand: Double) -> Double? {
         opStack.append(Op.Operand(operand))
         return evaluate()
     }
+    
+    //assignment 2-5
+    
+    func pushOperand(symbol: String) -> Double? {
+        opStack.append(Op.Variable(symbol))
+        return evaluate()
+    }
+    
     
     func performOperation (symbol:String) -> Double?{
         if let operation = knownOps[symbol]{
@@ -80,6 +87,13 @@ class CalculatorBrain
             switch op{
             case .Operand(let operand):
                 return (operand,remainingOps)
+            case .Variable(let symbol):
+                if variableValues[symbol] == nil{
+                return (nil,remainingOps)
+                }
+                else {
+                return (variableValues[symbol],remainingOps)
+                }
             case .UnaryOperation( _ , let operation):
                 var operandEvaluation = evaluate( remainingOps)
                 if let operand = operandEvaluation.result{

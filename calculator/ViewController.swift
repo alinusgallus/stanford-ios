@@ -64,7 +64,7 @@ class ViewController: UIViewController {
         }
         set{
             if let text = newValue{
-                display.text = "\(newValue)"
+                display.text = "\(text)"
                 userIsTyping = false
             }
             else {
